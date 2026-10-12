@@ -1,15 +1,20 @@
-# Enterprise Lab
+# Lab 1: Java Maven Starter Project
 
-## Lab 1 – JDBC Connection
+A foundational Java application configured with Apache Maven and JUnit 5.
 
-Connects to a local MySQL database (`StudentsDB`) using JDBC and prints the
-average grade from the `students` table.
+---
 
-### Requirements
-- Java (JDK 8+)
-- MySQL running on `localhost:3306` with a `StudentsDB` database
-- MySQL Connector/J on the classpath
+## Prerequisites
 
-### Run
-Open the project in IntelliJ IDEA, update the database username/password in
-`Lab-1 jdbc_connection/src/Main.java`, and run `Main`.
+Before running the application, ensure the following are installed:
+
+- **Java Development Kit (JDK)**: Version 17 or higher
+- **Apache Maven**: Version 3.8+ (or use the included Maven Wrapper `./mvnw`)
+- **Git**
+
+Verify your local environment:
+
+```bash
+java -version
+mvn -version
+```
