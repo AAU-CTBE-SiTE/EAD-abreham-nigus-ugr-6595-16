@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="address" class="com.craft.Address">
+        <property name="city" value="Addis"/>
+        <property name="country" value="Ethiopia"/>
+    </bean>
+
+    <!-- The index is 0-based and matches Student(int id, String name, int age, Address address) -->
+    <bean id="student" class="com.craft.Student">
+        <constructor-arg index="0" value="101"/>
+        <constructor-arg index="1" value="John Doe"/>
+        <constructor-arg index="2" value="20"/>
+        <constructor-arg index="3" ref="address"/> <!-- reference to address bean -->
+    </bean>
+
+</beans>
