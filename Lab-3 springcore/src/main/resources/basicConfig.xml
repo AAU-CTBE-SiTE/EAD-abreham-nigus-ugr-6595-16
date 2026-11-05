@@ -5,11 +5,6 @@
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- bean definitions here -->
-    <!-- Constructor argument name -->
-    <bean id="student" class="com.craft.step05_constructorinjection.Student">
-        <constructor-arg name="id" value="101"/>
-        <constructor-arg name="name" value="John Doe"/>
-        <constructor-arg name="age" value="20"/>
-    </bean>
+    <bean id="student" class="com.craft.Student"></bean>
 
 </beans>
