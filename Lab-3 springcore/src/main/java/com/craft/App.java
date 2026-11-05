@@ -1,58 +1,24 @@
 package com.craft;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
+// Runs every step of the lab in order. Each step also has its own App with a main() you can run on its own.
 public class App {
     public static void main(String[] args) {
-        setterInjectionDemo();
-        constructorInjectionDemo();
-        scopeDemo();
+        run("Step 1: Tight coupling", () -> com.craft.step01_tightcoupling.App.main(args));
+        run("Step 2: Let Spring create the bean", () -> com.craft.step02_firstbean.App.main(args));
+        run("Step 3: Bean from Spring, values set by hand", () -> com.craft.step03_manualsetters.App.main(args));
+        run("Step 4: Setter-based injection", () -> com.craft.step04_setterinjection.App.main(args));
+        run("Step 5: Constructor-based injection", () -> com.craft.step05_constructorinjection.App.main(args));
+        run("Step 6: Literal dependency injection", () -> com.craft.step06_literalinjection.App.main(args));
+        run("Step 7: Object dependency injection (setter)", () -> com.craft.step07_objectinjection.App.main(args));
+        run("Step 8: Object dependency injection (constructor)", () -> com.craft.step08_constructorobjectinjection.App.main(args));
+        run("Step 9: Collections dependency injection", () -> com.craft.step09_collectioninjection.App.main(args));
+        run("Step 10: Singleton scope", () -> com.craft.step10_singletonscope.App.main(args));
+        run("Step 11: Prototype scope", () -> com.craft.step11_prototypescope.App.main(args));
     }
 
-    // Setter-based injection: literal values, an object (ref) and a collection (<list>)
-    private static void setterInjectionDemo() {
-        System.out.println("=== Setter injection (beansConfig.xml) ===");
-        ApplicationContext context = new ClassPathXmlApplicationContext("beansConfig.xml");
-        Student student = context.getBean("student", Student.class);
-
-        System.out.println(student);
-        student.getDetails();
-    }
-
-    // Constructor-based injection: literal values and an object (ref)
-    private static void constructorInjectionDemo() {
+    private static void run(String title, Runnable step) {
         System.out.println();
-        System.out.println("=== Constructor injection (constructorConfig.xml) ===");
-        ApplicationContext context = new ClassPathXmlApplicationContext("constructorConfig.xml");
-        Student student = context.getBean("student", Student.class);
-
-        System.out.println(student);
-    }
-
-    // Bean scopes: singleton (default) vs prototype
-    private static void scopeDemo() {
-        System.out.println();
-        System.out.println("=== Bean scopes (scopeConfig.xml) ===");
-        ApplicationContext context = new ClassPathXmlApplicationContext("scopeConfig.xml");
-
-        Student student1 = context.getBean("singletonStudent", Student.class);
-        Student student2 = context.getBean("singletonStudent", Student.class);
-
-        // Check if both references point to the SAME instance
-        System.out.println("singleton: student1 == student2 -> " + (student1 == student2));
-
-        // Modify student1's name, student2 reflects the change
-        student1.setName("John Doe");
-        System.out.println("singleton: student2.getName() -> " + student2.getName());
-
-        Student student3 = context.getBean("prototypeStudent", Student.class);
-        Student student4 = context.getBean("prototypeStudent", Student.class);
-
-        System.out.println("prototype: student3 == student4 -> " + (student3 == student4));
-
-        // Modify student3's name, student4 is a different object so it does not change
-        student3.setName("John Doe");
-        System.out.println("prototype: student4.getName() -> " + student4.getName());
+        System.out.println("=== " + title + " ===");
+        step.run();
     }
 }
