@@ -1,4 +1,4 @@
-package com.craft.step09_collectioninjection;
+package com.craft;
 
 import lombok.Data;
 import lombok.ToString;

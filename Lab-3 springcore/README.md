@@ -1,6 +1,6 @@
 # springcore
 
-A lab project that shows the basics of the Spring Framework's IoC container and dependency injection. It starts with a tightly coupled `App` that creates its own `Student` with `new`, then hands object creation and wiring to Spring step by step, using XML configuration files read by `ClassPathXmlApplicationContext`.
+A lab project that shows the basics of the Spring Framework's IoC container and dependency injection. It starts with a tightly coupled `App` that creates its own `Student` with `new`, then hands object creation and wiring to Spring through XML configuration files read by `ClassPathXmlApplicationContext`.
 
 ## Tech stack
 
@@ -13,52 +13,49 @@ A lab project that shows the basics of the Spring Framework's IoC container and 
 
 ## Project structure
 
-Each step of the lab is its own package under `com.craft`, with its own `Student` (and `Address`/`Subject` where needed), its own `App` with a `main()`, and its own config folder under `src/main/resources`. Because the steps don't share classes, every version of `Student` from the lab stays exactly as the lab wrote it.
-
 ```
 springcore/
 ├── pom.xml
 └── src/main/
     ├── java/com/craft/
-    │   ├── App.java                          # Runs every step in order
-    │   ├── step01_tightcoupling/
-    │   ├── step02_firstbean/
-    │   ├── step03_manualsetters/
-    │   ├── step04_setterinjection/
-    │   ├── step05_constructorinjection/
-    │   ├── step06_literalinjection/
-    │   ├── step07_objectinjection/
-    │   ├── step08_constructorobjectinjection/
-    │   ├── step09_collectioninjection/
-    │   ├── step10_singletonscope/
-    │   └── step11_prototypescope/
+    │   ├── App.java       # Runs one demo per topic of the lab
+    │   ├── Student.java   # id, name, age, address, subjects + 3 constructors
+    │   ├── Address.java   # city, country
+    │   └── Subject.java   # subjectName
     └── resources/
-        └── stepNN_.../beansConfig*.xml       # One folder per step
+        ├── basicConfig.xml        # First bean: <bean id="student" .../>
+        ├── beansConfig.xml        # Setter injection: literals, ref, <list>/<array>/<set>
+        ├── constructorConfig.xml  # Constructor injection: by name, order, index, and with ref
+        └── scopeConfig.xml        # singleton vs prototype
 ```
 
-## The steps
+`Student` has three constructors so every part of the lab can use the same class:
 
-| Step | Topic | What it shows |
+| Constructor | Prints | Used by |
 |---|---|---|
-| 1 | Tight coupling | `App` creates `Student` with `new Student()`, so `App` is directly coupled to `Student` |
-| 2 | Let Spring create the bean | `<bean id="student" class="...">` and `context.getBean("student", Student.class)` |
-| 3 | Values set by hand | Spring creates the bean, `App` calls `setId`, `setName`, `setAge` itself |
-| 4 | Setter-based injection | `<property name="..." value="..."/>` makes Spring call the setters |
-| 5 | Constructor-based injection | `<constructor-arg>` matched three ways: by `name`, by order (no attribute) and by `index` |
-| 6 | Literal dependency injection | Strings and numbers (`city`, `country`) injected through setters |
-| 7 | Object dependency injection (setter) | `ref="address"` injects the `Address` bean into `Student` |
-| 8 | Object dependency injection (constructor) | `<constructor-arg name="address" ref="address"/>` |
-| 9 | Collections dependency injection | `List<Subject>` filled with `<list>`, `<array>` and `<set>` |
-| 10 | Singleton scope (default) | `getBean()` returns the same instance; a change through one reference shows in the other |
-| 11 | Prototype scope | `getBean()` returns a new instance every time |
+| `Student()` | `Empty Constructor...` | `new Student()`, setter injection, scopes |
+| `Student(int id, String name, int age)` | `Student Parameterized Constructor Called` | constructor injection |
+| `Student(int id, String name, int age, Address address)` | | constructor object injection |
 
-Step 5's match-by-`name` version needs the compiler to keep constructor parameter names, so `pom.xml` sets `<parameters>true</parameters>` on the compiler plugin.
+## What `App` runs
+
+| Demo | Config | What it shows |
+|---|---|---|
+| Tight coupling | none | `App` creates `Student` with `new Student()` and calls `getHello()` |
+| Let Spring create the bean | `basicConfig.xml` | `getBean("student", Student.class)`, then values set by hand with `setId`, `setName`, `setAge` |
+| Setter injection | `beansConfig.xml` | `<property name="..." value="..."/>` makes Spring call the setters (literal values) |
+| Constructor injection | `constructorConfig.xml` | `<constructor-arg>` matched by `name`, by order (no attribute) and by `index` |
+| Object injection | `beansConfig.xml`, `constructorConfig.xml` | `ref="address"` injects the `Address` bean, through a setter and through a constructor |
+| Collection injection | `beansConfig.xml` | `List<Subject>` filled with `<list>`, `<array>` and `<set>` |
+| Bean scopes | `scopeConfig.xml` | singleton: `getBean()` returns the same instance; prototype: a new instance every time |
+
+`beansConfig.xml` and `constructorConfig.xml` set `default-lazy-init="true"`, so each bean is created only when `getBean()` asks for it and its constructor message prints next to the demo that uses it.
+
+The by-`name` constructor arguments need the compiler to keep parameter names, so `pom.xml` sets `<parameters>true</parameters>` on the compiler plugin.
 
 ## Run it
 
-Open the `Lab-3 springcore` folder in IntelliJ IDEA and let it import the Maven project. Run `com.craft.App` to see every step, or run the `App` inside any step package to see only that step.
-
-From the command line:
+Open the `Lab-3 springcore` folder in IntelliJ IDEA, let it import the Maven project, and run `com.craft.App`. Or from the command line:
 
 ```bash
 mvn compile exec:java -Dexec.mainClass=com.craft.App
@@ -67,65 +64,59 @@ mvn compile exec:java -Dexec.mainClass=com.craft.App
 ## Sample output
 
 ```
-=== Step 1: Tight coupling ===
+=== Tight coupling ===
+Empty Constructor...
 Hello Springers
 
-=== Step 2: Let Spring create the bean ===
+=== Let Spring create the bean (basicConfig.xml) ===
+Empty Constructor...
 Hello Springers
+Student Details Student(id=101, name=John, age=34, address=null, subjects=null)
 
-=== Step 3: Bean from Spring, values set by hand ===
-Student Details Student(id=101, name=John, age=34)
-
-=== Step 4: Setter-based injection ===
-Student Details Student(id=101, name=John Doe, age=20)
+=== Setter injection (beansConfig.xml) ===
+Empty Constructor...
+Student Details Student(id=101, name=John Doe, age=20, address=null, subjects=null)
 Student Name: John Doe
-Student(id=101, name=John Doe, age=20)
+Student(id=101, name=John Doe, age=20, address=null, subjects=null)
 
-=== Step 5: Constructor-based injection ===
--- step05_constructorinjection/beansConfig-name.xml
+=== Constructor injection (constructorConfig.xml) ===
 Student Parameterized Constructor Called
-Student(id=101, name=John Doe, age=20)
--- step05_constructorinjection/beansConfig-order.xml
+studentByName: Student(id=101, name=John Doe, age=20, address=null, subjects=null)
 Student Parameterized Constructor Called
-Student(id=101, name=John Doe, age=20)
--- step05_constructorinjection/beansConfig-index.xml
+studentByOrder: Student(id=101, name=John Doe, age=20, address=null, subjects=null)
 Student Parameterized Constructor Called
-Student(id=101, name=John Doe, age=20)
+studentByIndex: Student(id=101, name=John Doe, age=20, address=null, subjects=null)
 
-=== Step 6: Literal dependency injection ===
-Student(id=101, name=John Doe, age=20, city=Addis, country=Ethiopia)
-John Doe
+=== Object injection ===
+Empty Constructor...
+setter:      Student(id=101, name=John Doe, age=20, address=Address(city=Addis, country=Ethiopia), subjects=null)
+constructor: Student(id=101, name=John Doe, age=20, address=Address(city=Addis, country=Ethiopia), subjects=null)
 
-=== Step 7: Object dependency injection (setter) ===
-Student(id=101, name=John Doe, age=20, address=Address(city=Addis, country=Ethiopia))
-
-=== Step 8: Object dependency injection (constructor) ===
-Student(id=101, name=John Doe, age=20, address=Address(city=Addis, country=Ethiopia))
-
-=== Step 9: Collections dependency injection ===
--- step09_collectioninjection/beansConfig.xml
+=== Collection injection (beansConfig.xml) ===
+-- student
+Empty Constructor...
 Student(id=101, name=John Doe, age=20, address=Address(city=Addis, country=Ethiopia), subjects=[Subject(subjectName=Maths 101), Subject(subjectName=Java EE)])
 Student Name: John Doe
 Subject 1: Maths 101
 Subject 2: Java EE
--- step09_collectioninjection/beansConfig-array.xml
-...same as <list>...
--- step09_collectioninjection/beansConfig-set.xml
-...same as <list>...
+-- arrayStudent
+...same as student...
+-- setStudent
+...same as student...
 
-=== Step 10: Singleton scope ===
+=== Bean scopes (scopeConfig.xml) ===
 Empty Constructor...
+-- singleton
 true
 John Doe
-
-=== Step 11: Prototype scope ===
+-- prototype
 Empty Constructor...
 Empty Constructor...
 false
 null
 ```
 
-In step 10, `Empty Constructor...` prints once because the singleton is created when the context starts. In step 11 it prints twice, once for each `getBean()` call, and changing `student1`'s name leaves `student2`'s name as `null`.
+The singleton `Student` is created once, when the context starts. The prototype `Student` is created on each `getBean()` call, so changing `student1`'s name leaves `student2`'s name as `null`.
 
 ## Summary
 
