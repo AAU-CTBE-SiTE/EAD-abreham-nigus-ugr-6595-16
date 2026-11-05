@@ -5,17 +5,16 @@
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- bean definitions here -->
-    <bean id="address" class="com.craft.Address">
+    <bean id="address" class="com.craft.step07_objectinjection.Address">
         <property name="city" value="Addis"/>
         <property name="country" value="Ethiopia"/>
     </bean>
 
-    <!-- The index is 0-based and matches Student(int id, String name, int age, Address address) -->
-    <bean id="student" class="com.craft.Student">
-        <constructor-arg index="0" value="101"/>
-        <constructor-arg index="1" value="John Doe"/>
-        <constructor-arg index="2" value="20"/>
-        <constructor-arg index="3" ref="address"/> <!-- reference to address bean -->
+    <bean id="student" class="com.craft.step07_objectinjection.Student">
+        <property name="id" value="101"/>
+        <property name="name" value="John Doe"/>
+        <property name="age" value="20"/>
+        <property name="address" ref="address"/>
     </bean>
 
 </beans>

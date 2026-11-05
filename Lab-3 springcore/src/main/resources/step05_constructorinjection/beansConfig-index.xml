@@ -5,13 +5,11 @@
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- bean definitions here -->
-
-    <!-- singleton (default): one shared instance per container -->
-    <bean id="singletonStudent" class="com.craft.Student" scope="singleton">
-    </bean>
-
-    <!-- prototype: a new instance every time getBean() is called -->
-    <bean id="prototypeStudent" class="com.craft.Student" scope="prototype">
+    <!-- Constructor argument index. The index is 0-based. -->
+    <bean id="student" class="com.craft.step05_constructorinjection.Student">
+        <constructor-arg index="0" value="101"/>
+        <constructor-arg index="1" value="John Doe"/>
+        <constructor-arg index="2" value="20"/>
     </bean>
 
 </beans>
