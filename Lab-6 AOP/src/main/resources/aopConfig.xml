@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- XML-based AOP: the same ideas as the annotations, written in XML -->
+
+    <!-- The target bean -->
+    <bean id="studentService" class="com.craft.StudentService"/>
+
+    <!-- The aspect bean: a plain class, no @Aspect -->
+    <bean id="xmlLoggingAspect" class="com.craft.XmlLoggingAspect"/>
+
+    <aop:config>
+        <!-- Pointcut: addStudent() and getStudent() of StudentService -->
+        <aop:pointcut id="addAndGet"
+                      expression="execution(* com.craft.StudentService.addStudent(..))
+                               || execution(* com.craft.StudentService.getStudent(..))"/>
+
+        <!-- Aspect: which bean holds the advice methods, and when each one runs -->
+        <aop:aspect ref="xmlLoggingAspect">
+            <aop:before pointcut-ref="addAndGet" method="logBefore"/>
+            <aop:after-returning pointcut-ref="addAndGet" method="logAfterReturning" returning="result"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
